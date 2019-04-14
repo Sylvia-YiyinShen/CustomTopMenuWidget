@@ -22,7 +22,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		2235BBA72260ADF1002445D7 /* TopMenuBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopMenuBarView.swift; sourceTree = "<group>"; };
+		2235BBA72260ADF1002445D7 /* TopMenuBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopMenuBarView.swift; sourceTree = "<group>"; wrapsLines = 0; };
 		2235BBA92260BE92002445D7 /* MyMenuBarItemView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MyMenuBarItemView.xib; sourceTree = "<group>"; };
 		2235BBAB2260CC43002445D7 /* UIView+extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+extension.swift"; sourceTree = "<group>"; };
 		D904FC122260696B009D4422 /* TopMenuBarDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TopMenuBarDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };

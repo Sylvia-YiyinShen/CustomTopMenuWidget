@@ -2,47 +2,56 @@
 //  TopMenuBarView.swift
 //  TopMenuBarDemo
 //
-//  Created by Zhihui Sun on 12/4/19.
+//  Created by Yiyin Shen on 12/4/19.
 //  Copyright © 2019 Sylvia. All rights reserved.
 //
 
 import UIKit
 
-@IBDesignable
-class TopMenuBarView: UIView {
+public class TopMenuBarView<ItemViewType: TopMenuBarItemViewProtocol>: UIView, UIScrollViewDelegate {
+    
+    // MARK: public customisable propertis
+    public var menuBarHeight: CGFloat = 44.0
+    public var menuItemWidth: CGFloat = 100.0
+    public var menuItemFont: UIFont? = UIFont(name: "Helvetica", size: 17)
+    public var menuItemInactiveColor: UIColor = UIColor.white
+    public var menuItemActiveColor: UIColor = UIColor.black
+    public var menuItemScaleEnabled: Bool = true
+    public var menuItemActivatedScale: CGFloat = 1.2
+    public var menuBarBackgroundColor: UIColor = UIColor.gray
+    
     private var models: [TopMenuBarItemModelProtocol]?
+    private var detailsViews: [TopMenuBarItemViewProtocol]?
     private var menuScrollView: UIScrollView?
     private var detailScollView: UIScrollView?
-    private var detailsViews: [UIView] = []
     private var menuItemButtons: [UIButton] = []
     private var activatedMenuButton: UIButton?
-
-    override func awakeFromNib() {
-        super.awakeFromNib()
-        backgroundColor = UIColor.orange
-    }
     
-    func configure(with models: [TopMenuBarItemModelProtocol]) {
+    public func configure(with models: [TopMenuBarItemModelProtocol], detailsViews: [TopMenuBarItemViewProtocol]) {
+        if models.count != detailsViews.count {
+            assertionFailure("each model should have one mapped view")
+        }
         self.models = models
+        self.detailsViews = detailsViews
         configureMenuScrollView()
         configureDetailScrollView()
     }
     
-    override func layoutSubviews() {
+    override public func layoutSubviews() {
         super.layoutSubviews()
-        guard let models = models else { return }
-        let menuBarHeight = 44.0
-        detailScollView?.frame = CGRect(x: 0.0, y: menuBarHeight, width: Double(frame.size.width), height: Double(frame.size.height) - menuBarHeight)
+        guard let models = models, let detailsViews = detailsViews else { return }
+        detailScollView?.frame = CGRect(x: 0.0, y: menuBarHeight, width: frame.size.width, height: frame.size.height - menuBarHeight)
         detailScollView?.contentSize = CGSize(width: CGFloat(models.count) * frame.size.width, height: detailScollView!.frame.height)
         for (index, detailView) in detailsViews.enumerated() {
-            detailView.frame = CGRect(x: frame.size.width * CGFloat(index), y: 0, width: frame.size.width, height: CGFloat(detailScollView!.frame.size.height))
+            if let view = detailView as? UIView {
+                view.frame = CGRect(x: frame.size.width * CGFloat(index), y: 0, width: frame.size.width, height: CGFloat(detailScollView!.frame.size.height))
+            }
         }
         
-        let buttonWidth = CGFloat(100)
-        menuScrollView?.frame = CGRect(x: 0.0, y: 0.0, width: Double(frame.size.width), height: menuBarHeight)
-        menuScrollView?.contentSize = CGSize(width: CGFloat(models.count) * buttonWidth, height: menuScrollView!.frame.height)
+        menuScrollView?.frame = CGRect(x: 0.0, y: 0.0, width: frame.size.width, height: menuBarHeight)
+        menuScrollView?.contentSize = CGSize(width: CGFloat(models.count) * menuItemWidth, height: menuScrollView!.frame.height)
         for (index, button) in menuItemButtons.enumerated() {
-            button.frame = CGRect(x: buttonWidth * CGFloat(index), y: 0, width: buttonWidth, height: menuScrollView!.frame.height)
+            button.frame = CGRect(x: menuItemWidth * CGFloat(index), y: 0, width: menuItemWidth, height: menuScrollView!.frame.height)
         }
     }
     
@@ -51,7 +60,8 @@ class TopMenuBarView: UIView {
         for (index, model) in models.enumerated() {
             let button = UIButton(type: .custom)
             button.setTitle(model.title, for: .normal)
-            button.setTitleColor(UIColor.white, for: .normal)
+            button.setTitleColor(menuItemInactiveColor, for: .normal)
+            button.titleLabel?.font = menuItemFont
             button.tag = index
             button.addTarget(self, action: #selector(didTapTitle(button:)), for: .touchUpInside)
             menuItemButtons.append(button)
@@ -67,10 +77,12 @@ class TopMenuBarView: UIView {
     }
     
     private func activateButton(_ button: UIButton) {
-        activatedMenuButton?.setTitleColor(UIColor.white, for: .normal)
+        activatedMenuButton?.setTitleColor(menuItemInactiveColor, for: .normal)
         activatedMenuButton?.transform = CGAffineTransform.identity
-        button.setTitleColor(UIColor.black, for: .normal)
-        button.transform = button.transform.scaledBy(x: 1.2, y: 1.2)
+        button.setTitleColor(menuItemActiveColor, for: .normal)
+        if menuItemScaleEnabled {
+            button.transform = button.transform.scaledBy(x: menuItemActivatedScale, y: menuItemActivatedScale)
+        }
         activatedMenuButton = button
         
         centerButton(for: button)
@@ -91,19 +103,19 @@ class TopMenuBarView: UIView {
     }
     
     private func addChildDetailsViews() {
-        guard let models = models, let detailScollView = detailScollView else { return }
-        for model in models {
-            let detailsView = MyMenuBarItemView.loadFromXib() as MyMenuBarItemView
-            detailsView.configure(with: model)
-            detailsViews.append(detailsView)
-            detailScollView.addSubview(detailsView)
+        guard let models = models, let detailScollView = detailScollView, let detailsViews = detailsViews else { return }
+        for (index, model) in models.enumerated() {
+            let detailsView = detailsViews[index]
+            (detailsView as? ItemViewType)?.configure(with: model)
+            if let view =  detailsView as? UIView {
+                detailScollView.addSubview(view)
+            }
         }
     }
     
-    
     private func configureMenuScrollView() {
         menuScrollView = UIScrollView()
-        menuScrollView?.backgroundColor = UIColor.gray
+        menuScrollView?.backgroundColor = menuBarBackgroundColor
         menuScrollView?.showsHorizontalScrollIndicator = false
         addSubview(menuScrollView!)
         addMenuItemButtons()
@@ -117,10 +129,8 @@ class TopMenuBarView: UIView {
         addSubview(detailScollView!)
         addChildDetailsViews()
     }
-}
-
-extension TopMenuBarView: UIScrollViewDelegate {
-    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+    
+    public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         let currentIndex = Int(scrollView.contentOffset.x / frame.size.width)
         let button = menuItemButtons[currentIndex]
         activateButton(button)

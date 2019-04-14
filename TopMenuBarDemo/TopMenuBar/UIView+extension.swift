@@ -2,7 +2,7 @@
 //  UIView+extension.swift
 //  TopMenuBarDemo
 //
-//  Created by Zhihui Sun on 12/4/19.
+//  Created by Yiyin Shen on 12/4/19.
 //  Copyright © 2019 Sylvia. All rights reserved.
 //
 

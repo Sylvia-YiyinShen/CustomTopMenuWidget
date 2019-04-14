@@ -8,6 +8,6 @@
 
 import UIKit
 
-protocol TopMenuBarItemViewProtocol where Self: UIView {
+public protocol TopMenuBarItemViewProtocol where Self: UIView {
     func configure(with model: TopMenuBarItemModelProtocol)
 }
