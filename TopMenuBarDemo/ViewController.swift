@@ -10,15 +10,20 @@ import UIKit
 
 class ViewController: UIViewController {
 
-    
     @IBOutlet weak var menuViewContainer: UIView!
     private var topMenuView = TopMenuBarView<MyMenuBarItemView>()
     
     private func configureMenuBarView() {
+        // customisable properties
+//        topMenuView.menuBarHeight = 30
+//        topMenuView.menuItemFont = UIFont(name: "Helvetica", size: 14)
+//        topMenuView.menuBarBackgroundColor = UIColor.orange
+//        topMenuView.menuItemActiveColor = UIColor.white
+//        topMenuView.menuItemInactiveColor = UIColor.lightGray
+//        topMenuView.menuItemWidth = 200
+        
         topMenuView.configure(with: menuItemModels, detailsViews: menuDetailsViews)
         menuViewContainer.addSubview(topMenuView)
-        
-        // customisable properties
     }
 
     override func viewDidLoad() {

@@ -19,6 +19,7 @@ public class TopMenuBarView<ItemViewType: TopMenuBarItemViewProtocol>: UIView, U
     public var menuItemScaleEnabled: Bool = true
     public var menuItemActivatedScale: CGFloat = 1.2
     public var menuBarBackgroundColor: UIColor = UIColor.gray
+    public var menuBarAnimated: Bool = true
     
     private var models: [TopMenuBarItemModelProtocol]?
     private var detailsViews: [TopMenuBarItemViewProtocol]?
@@ -97,7 +98,11 @@ public class TopMenuBarView<ItemViewType: TopMenuBarItemViewProtocol>: UIView, U
         if offsetX < 0 { offsetX = 0}
         if offsetX > maxOffset { offsetX = maxOffset }
         
-        UIView.animate(withDuration: 0.2) {
+        if menuBarAnimated {
+            UIView.animate(withDuration: 0.2) {
+                menuScrollView.contentOffset = CGPoint(x: offsetX, y: 0)
+            }
+        } else {
             menuScrollView.contentOffset = CGPoint(x: offsetX, y: 0)
         }
     }
