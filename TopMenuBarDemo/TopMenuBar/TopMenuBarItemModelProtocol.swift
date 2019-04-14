@@ -6,4 +6,6 @@
 //  Copyright © 2019 Sylvia. All rights reserved.
 //
 
-protocol TopMenuBarItemModelProtocol {}
+protocol TopMenuBarItemModelProtocol {
+    var title: String { get set }
+}
